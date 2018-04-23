@@ -61,6 +61,7 @@ namespace u3SummativeShipston
         private string GetPlaceholderWord()
         {
             int length = word.Length;
+            placeholderWord = " ";
             for (int i = 0; i <= length; i++)
             {
                 placeholderWord += "_ ";
@@ -75,11 +76,40 @@ namespace u3SummativeShipston
             {
                 if (word.Contains(txtInput.Text))
                 {
+                    string preLetter = "";
+                    string postLetter = "";
                     int location = word.IndexOf(txtInput.Text, 1);
-                    for (int i = 0; i > placeholderWord.Length; i++)
+                    if (location == 0)
                     {
-                        placeholderWord = placeholderWord.Remove(placeholderWord.IndexOf(" "));
+                        postLetter = word.Substring(word.IndexOf(txtInput.Text) + 1, word.Length - preLetter.Length);
+                        MessageBox.Show(postLetter);
                     }
+                    else if (location == word.Length)
+                    {
+                        preLetter = word.Substring(0, word.IndexOf(txtInput.Text) - 1);
+                        MessageBox.Show(preLetter);
+                    }
+                    else
+                    {
+                        preLetter = word.Substring(0, word.IndexOf(txtInput.Text) - 1);
+                        MessageBox.Show(preLetter);
+                        postLetter = word.Substring(word.IndexOf(txtInput.Text) + 1, word.Length - preLetter.Length + 1);
+                        MessageBox.Show(postLetter);
+                    }
+
+                    placeholderWord = "";
+
+                    for (int I = 0; I < preLetter.Length * 2; I++)
+                    {
+                        placeholderWord += "_ ";
+                    }
+                    placeholderWord += txtInput.Text;
+                    for (int I = 0; I < postLetter.Length * 2; I++)
+                    {
+                        placeholderWord += " _";
+                    }
+                    lblOutput.Content = placeholderWord;
+                    MessageBox.Show("correct");
                 }
                 else
                 {
@@ -87,6 +117,11 @@ namespace u3SummativeShipston
                     guesses++;
                 }
             }
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            //get working
         }
     }
 }

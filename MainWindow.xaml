@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:u3SummativeShipston"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Fun Hangman Game" Height="350" Width="525">
     <StackPanel>
         <TextBox x:Name="txtInput"
                  Text="Type letter or word guess here"/>
@@ -14,5 +14,8 @@
                 Click="btnGuess_Click"/>
         <Label x:Name="lblOutput"
                Content=""/>
+        <Button x:Name="btnReset"
+                Content="Reset"
+                Click="btnReset_Click"/>
     </StackPanel>
 </Window>
