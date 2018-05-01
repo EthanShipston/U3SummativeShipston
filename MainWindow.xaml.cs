@@ -36,7 +36,7 @@ namespace u3SummativeShipston
         {
             getNewWord();
             InitializeComponent();
-            lblOutput.Content = GetPlaceholderWord();
+            txtOutput.Text = GetPlaceholderWord();
         }
         private void getNewWord()         //Collects word from word list
         {
@@ -46,8 +46,7 @@ namespace u3SummativeShipston
                 while (!streamReader.EndOfStream)
                 {
                     string line = streamReader.ReadLine();
-                    //if (line.Contains(r.Next(60).ToString()))
-                    if (line.Contains(3.ToString())) //variable changed to 3 for testing purposes
+                    if (line.Contains(r.Next(60).ToString()))
                     {
                         line = line.Remove(0, line.IndexOf(" ") + 1);
                         word = line;
@@ -64,9 +63,9 @@ namespace u3SummativeShipston
         private string GetPlaceholderWord() //Creates string with "_ " in place of each character in the selected word
         {
             int length = word.Length;
-            for (int i = 0; i <= length; i++)
+            for (int i = 0; i < length; i++)
             {
-                placeHolderWord += "_ ";
+                placeHolderWord += " _";
             }
             return placeHolderWord;
         }
@@ -74,20 +73,24 @@ namespace u3SummativeShipston
         private void btnGuess_Click(object sender, RoutedEventArgs e)
         {
             strInput = txtInput.Text; //Input to a string for simplification
-            if (word.Contains(txtInput.Text))
+            if (lblLettersGuessed.Content.ToString().Substring(17).Contains(strInput))
+            {
+                MessageBox.Show("Letter already guessed!");
+            }
+            else if (word.Contains(txtInput.Text))
             {
                 if (strInput.Length > 1)
                 {
                     if (strInput == word) //Distributes victory if word guess is correct
                     {
-                        lblOutput.Content = strInput;
+                        txtOutput.Text = strInput;
                         MessageBox.Show("Congratulations! You win!" + "\n" + "You guessed " + guesses.ToString() + " times!");
                         guesses = 0;
                         getNewWord();
                         placeHolderWord = "";
                         //resets word
                         GetPlaceholderWord();
-                        lblOutput.Content = placeHolderWord;
+                        txtOutput.Text = placeHolderWord;
                     }
                     else //informs of an Incorrect guess
                     {
@@ -95,30 +98,23 @@ namespace u3SummativeShipston
                         guesses++;
                     }
                 }
-
                 else if (word.Contains(strInput))
                 {
-                    if (lblLettersGuessed.Content.ToString().Substring(17).Contains(strInput))
+                    lblLettersGuessed.Content += strInput + ", ";
+                    string tempWord = "";
+                    for (int i = 0; i < word.Length; i++)
                     {
-                        MessageBox.Show("Letter already guessed!");
-                    }
-                    else
-                    {
-                        string tempWord = "";
-                        for (int i = 0; i < word.Length; i++)
+                        if (word.Substring(i, 1) == strInput)
                         {
-                            if (word.Substring(i, 1) == strInput)
-                            {
-                                tempWord += strInput;
-                                lblOutput.Content = tempWord + " ";
-                            } 
-                            else
-                            {
-                                tempWord += placeHolderWord.Substring(i*2, 2);
-                            }
+                            tempWord += " " + strInput;
                         }
-                        placeHolderWord = tempWord;
+                        else
+                        {
+                            tempWord += placeHolderWord.Substring(i * 2, 2);
+                        }
                     }
+                    txtOutput.Text = tempWord;
+                    placeHolderWord = tempWord;
                 }
                 else
                 {
@@ -127,6 +123,7 @@ namespace u3SummativeShipston
             }
             else
             {
+                lblLettersGuessed.Content += strInput + ", ";
                 MessageBox.Show("Incorrect!");
                 guesses++;
                 if (guesses == 10) //lose condition
@@ -134,9 +131,22 @@ namespace u3SummativeShipston
                     MessageBox.Show("You Lose!");
                     getNewWord();
                     GetPlaceholderWord();
-
+                    txtOutput.Text = placeHolderWord;
+                    lblLettersGuessed.Content.ToString().Remove(lblLettersGuessed.Content.ToString().Substring(17).Length, lblLettersGuessed.Content.ToString().Length - lblLettersGuessed.Content.ToString().Substring(17).Length);
                 }
             }
+        }
+
+        private void btnReset_Click(object sender, RoutedEventArgs e)
+        {
+            txtOutput.Text = "";
+            placeHolderWord = "";
+            MessageBox.Show("You Reset!");
+            getNewWord();
+            GetPlaceholderWord();
+            txtOutput.Text = placeHolderWord;
+            string tempString = lblLettersGuessed.Content.ToString().Substring(0, 17);
+            lblLettersGuessed.Content = tempString;
         }
     }
 }
