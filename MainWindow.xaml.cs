@@ -25,18 +25,20 @@ namespace u3SummativeShipston
     /// </summary>
     public partial class MainWindow : Window
     {
+        //Global Variables
         int guesses = 0;
-        string word = "Nothing";
-        string placeholderWord = "";
+        string word = "";
+        string placeHolderWord = "";
         Random r = new Random();
+        string strInput = "";
+
         public MainWindow()
         {
-            ChooseWord();
+            getNewWord();
             InitializeComponent();
             lblOutput.Content = GetPlaceholderWord();
         }
-
-        private void ChooseWord()
+        private void getNewWord()         //Collects word from word list
         {
             System.IO.StreamReader streamReader = new System.IO.StreamReader("Words.txt");
             try
@@ -44,7 +46,8 @@ namespace u3SummativeShipston
                 while (!streamReader.EndOfStream)
                 {
                     string line = streamReader.ReadLine();
-                    if (line.Contains(r.Next(60).ToString()))
+                    //if (line.Contains(r.Next(60).ToString()))
+                    if (line.Contains(3.ToString())) //variable changed to 3 for testing purposes
                     {
                         line = line.Remove(0, line.IndexOf(" ") + 1);
                         word = line;
@@ -58,70 +61,82 @@ namespace u3SummativeShipston
             }
         }
 
-        private string GetPlaceholderWord()
+        private string GetPlaceholderWord() //Creates string with "_ " in place of each character in the selected word
         {
             int length = word.Length;
-            placeholderWord = " ";
             for (int i = 0; i <= length; i++)
             {
-                placeholderWord += "_ ";
+                placeHolderWord += "_ ";
             }
-            return placeholderWord;
+            return placeHolderWord;
         }
 
         private void btnGuess_Click(object sender, RoutedEventArgs e)
         {
-            int txtInt = txtInput.Text.Length;
-            if (txtInt == 1)
+            strInput = txtInput.Text; //Input to a string for simplification
+            if (word.Contains(txtInput.Text))
             {
-                if (word.Contains(txtInput.Text))
+                if (strInput.Length > 1)
                 {
-                    string preLetter = "";
-                    string postLetter = "";
-                    int location = word.IndexOf(txtInput.Text, 1);
-                    if (location == 0)
+                    if (strInput == word) //Distributes victory if word guess is correct
                     {
-                        postLetter = word.Substring(word.IndexOf(txtInput.Text) + 1, word.Length - preLetter.Length);
-                        MessageBox.Show(postLetter);
+                        lblOutput.Content = strInput;
+                        MessageBox.Show("Congratulations! You win!" + "\n" + "You guessed " + guesses.ToString() + " times!");
+                        guesses = 0;
+                        getNewWord();
+                        placeHolderWord = "";
+                        //resets word
+                        GetPlaceholderWord();
+                        lblOutput.Content = placeHolderWord;
                     }
-                    else if (location == word.Length)
+                    else //informs of an Incorrect guess
                     {
-                        preLetter = word.Substring(0, word.IndexOf(txtInput.Text) - 1);
-                        MessageBox.Show(preLetter);
+                        MessageBox.Show("Incorrect!");
+                        guesses++;
+                    }
+                }
+
+                else if (word.Contains(strInput))
+                {
+                    if (lblLettersGuessed.Content.ToString().Substring(17).Contains(strInput))
+                    {
+                        MessageBox.Show("Letter already guessed!");
                     }
                     else
                     {
-                        preLetter = word.Substring(0, word.IndexOf(txtInput.Text) - 1);
-                        MessageBox.Show(preLetter);
-                        postLetter = word.Substring(word.IndexOf(txtInput.Text) + 1, word.Length - preLetter.Length + 1);
-                        MessageBox.Show(postLetter);
+                        string tempWord = "";
+                        for (int i = 0; i < word.Length; i++)
+                        {
+                            if (word.Substring(i, 1) == strInput)
+                            {
+                                tempWord += strInput;
+                                lblOutput.Content = tempWord + " ";
+                            } 
+                            else
+                            {
+                                tempWord += placeHolderWord.Substring(i*2, 2);
+                            }
+                        }
+                        placeHolderWord = tempWord;
                     }
-
-                    placeholderWord = "";
-
-                    for (int I = 0; I < preLetter.Length * 2; I++)
-                    {
-                        placeholderWord += "_ ";
-                    }
-                    placeholderWord += txtInput.Text;
-                    for (int I = 0; I < postLetter.Length * 2; I++)
-                    {
-                        placeholderWord += " _";
-                    }
-                    lblOutput.Content = placeholderWord;
-                    MessageBox.Show("correct");
                 }
                 else
                 {
-                    MessageBox.Show("Lame");
-                    guesses++;
+                    MessageBox.Show("You cannot leave the input blank!");
                 }
             }
-        }
+            else
+            {
+                MessageBox.Show("Incorrect!");
+                guesses++;
+                if (guesses == 10) //lose condition
+                {
+                    MessageBox.Show("You Lose!");
+                    getNewWord();
+                    GetPlaceholderWord();
 
-        private void btnReset_Click(object sender, RoutedEventArgs e)
-        {
-            //get working
+                }
+            }
         }
     }
 }
